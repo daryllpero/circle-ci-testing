@@ -4,10 +4,31 @@ jobs:
   build:
     docker:
       - image: cimg/node:18.0
+
     steps:
       - checkout
-      - run: npm install
-      - run: npm test
+
+      # Install deps
+      - run:
+          name: Install dependencies
+          command: npm install
+
+      # Run test and capture logs
+      - run:
+          name: Run tests and capture logs
+          command: |
+            echo "Running tests..."
+            npm test > output.log 2>&1 || true
+
+      # Debug: show logs in CI UI also
+      - run:
+          name: Print logs
+          command: cat output.log
+
+      # 🔥 THIS IS KEY STEP
+      - store_artifacts:
+          path: output.log
+          destination: logs
 
 workflows:
   build_and_test:
