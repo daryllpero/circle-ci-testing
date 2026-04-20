@@ -22,7 +22,6 @@ jobs:
 
       - store_artifacts:
           path: output.log
-          destination: logs
 
 workflows:
   build_and_test:
