@@ -8,24 +8,18 @@ jobs:
     steps:
       - checkout
 
-      # Install deps
       - run:
           name: Install dependencies
           command: npm install
 
-      # Run test and capture logs
+      # 🔥 Capture logs but preserve exit code
       - run:
           name: Run tests and capture logs
           command: |
             echo "Running tests..."
-            npm test > output.log 2>&1 || true
+            npm test 2>&1 | tee output.log
+            exit ${PIPESTATUS[0]}
 
-      # Debug: show logs in CI UI also
-      - run:
-          name: Print logs
-          command: cat output.log
-
-      # 🔥 THIS IS KEY STEP
       - store_artifacts:
           path: output.log
           destination: logs
