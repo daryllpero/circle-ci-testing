@@ -4,14 +4,15 @@ console.log("Running CI failure-focused test suite...\n");
 
 let failCount = 0;
 
-// ✅ IMPORTANT: stack trace enable
+// stack trace enable
 function fail(testName, message) {
   failCount++;
 
   const err = new Error(message);
 
   console.error(`FAIL: ${testName}`);
-  console.error(err.stack); // 🔥 gives file + line
+  console.error(`Error: ${err.message}`);
+  console.error(err.stack);
 }
 
 // =========================
