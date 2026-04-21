@@ -2,7 +2,13 @@
 
 console.log("Running test...");
 
-throw new Error("Intentional failure for CI testing");
+// Real logic test
+const expected = 5;
+const actual = 2 + 2;
 
-// Simulate success (for now)
+// This will fail naturally
+if (actual !== expected) {
+  throw new Error(`Expected ${expected}, but got ${actual}`);
+}
+
 console.log("Test passed!");
