@@ -41,7 +41,7 @@ function fail(testName, message) {
       "Dependency should load",
       `Cannot find module 'totally-non-existent-package-xyz'`
     );
-  }
+  };
 })();
 
 // 3. Runtime failure
