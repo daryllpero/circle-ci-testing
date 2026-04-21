@@ -1,92 +1,113 @@
 // test.js
 
-console.log("Running mixed CI test suite...\n");
+console.log("Running CI failure-focused test suite...\n");
 
-// Helper to run tests safely
-function runTest(name, fn) {
-  try {
-    fn();
-    console.log(`PASS: ${name}`);
-  } catch (err) {
-    console.error(`FAIL: ${name}`);
-    console.error(err.message);
-  }
+// Track failures
+let failCount = 0;
+
+// Helper
+function fail(testName, message) {
+  failCount++;
+  console.error(`FAIL: ${testName}`);
+  console.error(message);
 }
 
 // =========================
-// PASSING TESTS
+// FAILING TESTS ONLY
 // =========================
 
-// 1. Simple math (PASS)
-runTest("Addition works correctly", () => {
-  const result = 40 + 60;
-  if (result !== 100) throw new Error("Addition failed");
-});
-
-// 2. String test (PASS)
-runTest("String includes works", () => {
-  const text = "hello world";
-  if (!text.includes("world")) throw new Error("String test failed");
-});
-
-// 3. Array length (PASS)
-runTest("Array length is correct", () => {
-  const arr = [1, 2, 3];
-  if (arr.length !== 3) throw new Error("Array length incorrect");
-});
-
-
-// =========================
-// FAILING TESTS
-// =========================
-
-// 4. Assertion failure (FAIL)
-runTest("Calculation should equal 100", () => {
+// 1. Assertion failure
+(() => {
   const expected = 100;
-  const actual = 40 + 2;
+  const actual = 42;
+
   if (actual !== expected) {
-    throw new Error(`Expected ${expected}, but got ${actual}`);
+    fail(
+      "Calculation should equal 100",
+      `Assertion failed: expected ${expected}, received ${actual}`
+    );
   }
-});
+})();
 
-// 5. Missing dependency (FAIL)
-runTest("Dependency should load", () => {
-  require("totally-non-existent-package-xyz");
-});
-
-// 6. Runtime error (FAIL)
-runTest("Service layer should not crash", () => {
-  function crashApp() {
-    throw new Error("Critical runtime failure in service layer");
+// 2. Missing dependency
+(() => {
+  try {
+    require("totally-non-existent-package-xyz");
+  } catch (err) {
+    fail(
+      "Dependency should load",
+      `Module resolution failed: ${err.message}`
+    );
   }
-  crashApp();
-});
+})();
 
-// 7. Reference error (FAIL)
-runTest("Variable should exist", () => {
-  console.log(nonExistentVariable);
-});
-
-// 8. Type error (FAIL)
-runTest("Object should not be null", () => {
-  const x = null;
-  x.toString();
-});
-
-// 9. Async error (FAIL)
-runTest("Async call should succeed", async () => {
-  async function asyncFail() {
-    throw new Error("Async operation failed");
+// 3. Runtime failure
+(() => {
+  try {
+    const service = () => {
+      throw new Error("Database connection timeout");
+    };
+    service();
+  } catch (err) {
+    fail(
+      "Service layer should not crash",
+      `Runtime failure: ${err.message}`
+    );
   }
-  await asyncFail();
-});
+})();
 
+// 4. Reference error
+(() => {
+  try {
+    console.log(nonExistentVariable);
+  } catch (err) {
+    fail(
+      "Variable should exist",
+      `Reference error: ${err.message}`
+    );
+  }
+})();
+
+// 5. Type error
+(() => {
+  try {
+    const user = null;
+    user.toString();
+  } catch (err) {
+    fail(
+      "User object should not be null",
+      `Type error: ${err.message}`
+    );
+  }
+})();
+
+// 6. Async failure
+(async () => {
+  try {
+    const fetchData = async () => {
+      throw new Error("API responded with 500 Internal Server Error");
+    };
+    await fetchData();
+  } catch (err) {
+    fail(
+      "Async API call should succeed",
+      `Async error: ${err.message}`
+    );
+  } finally {
+    finish();
+  }
+})();
 
 // =========================
-// FINAL RESULT (IMPORTANT)
+// FINAL RESULT
 // =========================
 
-console.log("\nTest suite completed.");
+function finish() {
+  console.log(`\nSUMMARY: ${failCount} tests failed`);
 
-// Fail CI if any failures occurred
-process.exit(1);
+  if (failCount > 0) {
+    process.exit(1);
+  } else {
+    process.exit(0);
+  }
+}
