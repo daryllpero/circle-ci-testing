@@ -2,18 +2,20 @@
 
 console.log("Running CI failure-focused test suite...\n");
 
-// Track failures
 let failCount = 0;
 
-// Helper
+// ✅ IMPORTANT: stack trace enable
 function fail(testName, message) {
   failCount++;
+
+  const err = new Error(message);
+
   console.error(`FAIL: ${testName}`);
-  console.error(message);
+  console.error(err.stack); // 🔥 gives file + line
 }
 
 // =========================
-// FAILING TESTS ONLY
+// FAILING TESTS
 // =========================
 
 // 1. Assertion failure
@@ -36,7 +38,7 @@ function fail(testName, message) {
   } catch (err) {
     fail(
       "Dependency should load",
-      `Module resolution failed: ${err.message}`
+      `Cannot find module 'totally-non-existent-package-xyz'`
     );
   }
 })();
@@ -44,14 +46,11 @@ function fail(testName, message) {
 // 3. Runtime failure
 (() => {
   try {
-    const service = () => {
-      throw new Error("Database connection timeout");
-    };
-    service();
+    throw new Error("Database connection timeout");
   } catch (err) {
     fail(
       "Service layer should not crash",
-      `Runtime failure: ${err.message}`
+      err.message
     );
   }
 })();
@@ -63,7 +62,7 @@ function fail(testName, message) {
   } catch (err) {
     fail(
       "Variable should exist",
-      `Reference error: ${err.message}`
+      err.message
     );
   }
 })();
@@ -76,7 +75,7 @@ function fail(testName, message) {
   } catch (err) {
     fail(
       "User object should not be null",
-      `Type error: ${err.message}`
+      err.message
     );
   }
 })();
@@ -84,14 +83,11 @@ function fail(testName, message) {
 // 6. Async failure
 (async () => {
   try {
-    const fetchData = async () => {
-      throw new Error("API responded with 500 Internal Server Error");
-    };
-    await fetchData();
+    throw new Error("API responded with 500 Internal Server Error");
   } catch (err) {
     fail(
       "Async API call should succeed",
-      `Async error: ${err.message}`
+      err.message
     );
   } finally {
     finish();
@@ -99,7 +95,7 @@ function fail(testName, message) {
 })();
 
 // =========================
-// FINAL RESULT
+// FINAL
 // =========================
 
 function finish() {
