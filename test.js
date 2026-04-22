@@ -108,3 +108,4 @@ function finish() {
     process.exit(0);
   }
 }
+finish();
