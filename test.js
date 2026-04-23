@@ -45,16 +45,16 @@ function fail(testName, message) {
 })();
 
 // 3. Runtime failure
-// (() => {
-//   try {
-//     throw new Error("Database connection timeout");
-//   } catch (err) {
-//     fail(
-//       "Service layer should not crash",
-//       err.message
-//     );
-//   }
-// })();
+(() => {
+  try {
+    throw new Error("Database connection timeout");
+  } catch (err) {
+    fail(
+      "Service layer should not crash",
+      err.message
+    );
+  }
+})();
 
 // 4. Reference error
 (() => {
@@ -69,37 +69,37 @@ function fail(testName, message) {
 })();
 
 // 5. Type error
-// (() => {
-//   try {
-//     const user = null;
-//     user.toString();
-//   } catch (err) {
-//     fail(
-//       "User object should not be null",
-//       err.message
-//     );
-//   }
-// })();
+(() => {
+  try {
+    const user = null;
+    user.toString();
+  } catch (err) {
+    fail(
+      "User object should not be null",
+      err.message
+    );
+  }
+})();
 
 // 6. Async failure
-// (async () => {
-//   try {
-//     throw new Error("API responded with 500 Internal Server Error");
-//   } catch (err) {
-//     fail(
-//       "Async API call should succeed",
-//       err.message
-//     );
-//   } finally {
-//     finish();
-//   }
-// })();
+async function runAsyncTest() {
+  try {
+    throw new Error("API responded with 500 Internal Server Error");
+  } catch (err) {
+    fail(
+      "Async API call should succeed",
+      err.message
+    );
+  }
+}
 
 // =========================
 // FINAL
 // =========================
 
-function finish() {
+async function runAllTests() {
+  await runAsyncTest();
+
   console.log(`\nSUMMARY: ${failCount} tests failed`);
 
   if (failCount > 0) {
@@ -108,4 +108,5 @@ function finish() {
     process.exit(0);
   }
 }
-finish();
+
+runAllTests();
