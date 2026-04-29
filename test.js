@@ -107,6 +107,6 @@ async function runAllTests() {
   } else {
     process.exit(0);
   }
-}
+};
 
 runAllTests();
