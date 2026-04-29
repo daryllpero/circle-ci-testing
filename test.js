@@ -2,7 +2,7 @@
 
 console.log("Running CI failure-focused test suite...\n");
 
-let failCount = 0;
+let failCount = 0
 
 // stack trace enable for better debugging
 function fail(testName, message) {
