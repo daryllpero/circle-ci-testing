@@ -16,8 +16,9 @@ jobs:
       - run:
           name: Run tests and capture logs
           command: |
-            echo "Running tests..."
+            echo "=== TEST START ==="
             npm test 2>&1 | tee output.log
+            echo "=== TEST END ==="
             exit ${PIPESTATUS[0]}
 
       - store_artifacts:
