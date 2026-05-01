@@ -9,17 +9,47 @@ jobs:
       - checkout
 
       - run:
-          name: Install dependencies
+          name: Install Node dependencies
           command: npm install
 
-      # 🔥 Capture logs but preserve exit code
       - run:
-          name: Run tests and capture logs
+          name: Install Python
           command: |
-            echo "=== TEST START ==="
-            npm test 2>&1 | tee output.log
-            echo "=== TEST END ==="
-            exit ${PIPESTATUS[0]}
+            sudo apt update
+            sudo apt install -y python3 python3-pip
+            pip3 install pytest flake8
+
+      - run:
+          name: Run All Checks
+          command: |
+            echo "===== START PIPELINE =====" | tee output.log
+            echo "" | tee -a output.log
+
+            echo "========== BACKEND TESTS STARTED ==========" | tee -a output.log
+            echo "" | tee -a output.log
+            npm test 2>&1 | tee -a output.log || true
+            echo "" | tee -a output.log
+
+            echo "========== FRONTEND TESTS STARTED ==========" | tee -a output.log
+            echo "" | tee -a output.log
+            npm run frontend:test 2>&1 | tee -a output.log || true
+            echo "" | tee -a output.log
+
+            echo "========== PYTHON LINT STARTED ==========" | tee -a output.log
+            echo "" | tee -a output.log
+            cd pythonFiles
+            flake8 . 2>&1 | tee -a ../output.log || true
+            echo "" | tee -a ../output.log
+
+            echo "========== PYTHON TESTS STARTED ==========" | tee -a ../output.log
+            echo "" | tee -a ../output.log
+            pytest 2>&1 | tee -a ../output.log || true
+            echo "" | tee -a ../output.log
+            cd ..
+
+            echo "===== END PIPELINE =====" | tee -a output.log
+
+            exit 1
 
       - store_artifacts:
           path: output.log

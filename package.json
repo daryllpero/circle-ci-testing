@@ -1,19 +1,20 @@
 {
   "name": "circle-ci-testing",
   "version": "1.0.0",
-  "description": "",
+  "description": "Multi-language CI debugging test project",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "node test.js"
+    "test": "node nodeFiles/userService.test.js",
+    "frontend:test": "node frontendFiles/frontend.test.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/daryllpero/circle-ci-testing.git"
   },
-  "keywords": [],
+  "keywords": ["ci", "debugging", "ai", "testing"],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "bugs": {
     "url": "https://github.com/daryllpero/circle-ci-testing/issues"
   },

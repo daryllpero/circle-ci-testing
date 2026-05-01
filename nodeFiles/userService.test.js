@@ -21,7 +21,7 @@ async function test(name, fn) {
 async function runTests() {
 
   // 1. Discount
-  await test("calculateDiscount should apply percentage correctly", () => {
+  await test("calculate Discount should apply percentage correctly", () => {
     const result = calculateDiscount(200, 10);
     if (result !== 180) {
       throw new Error(`Expected 180, got ${result}`);
