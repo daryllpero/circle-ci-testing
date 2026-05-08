@@ -1,5 +1,5 @@
 export function sum(a, b) {
-  return a + b + c;
+  return a + b;
 }
 
 export function getUser(user) {
